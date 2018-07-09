@@ -131,6 +131,7 @@
     'manufacturer'			=> 'Manufacturer',
     'manufacturers'			=> 'Manufacturers',
     'markdown'				=> 'This field allows <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'merge'                 => 'Merge',
     'min_amt'				=> 'Min. QTY',
     'min_amt_help'	=> 'Minimum number of items that should be available before an alert gets triggered.',
     'model_no'				=> 'Model No.',

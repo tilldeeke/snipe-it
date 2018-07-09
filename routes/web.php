@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
         'parameters' => ['manufacturer' => 'manufacturers_id']
     ]);
 
+    Route::post('manufacturers/bulk', 'ManufacturersController@bulk')->name('manufacturers.bulk');
     /*
     * Suppliers
     */

@@ -29,30 +29,47 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-        <div class="table-responsive">
+        {{ Form::open([
+          'method' => 'POST',
+          'route' => ['manufacturers.bulk'],
+          'class' => 'form-inline',
+           'id' => 'bulkForm']) }}        
+        <div class="row">
+          <div class="col-md-12">        
+            <div id="toolbar">
+              <select name="bulk_actions" class="form-control select2">
+                <option value="merge">@lang('general.merge')</option>
+              </select>
+              <button class="btn btn-primary" id="bulkEdit" disabled>Go</button>
+            </div>        
+            <div class="table-responsive">
 
-          <table
-            data-columns="{{ \App\Presenters\ManufacturerPresenter::dataTableLayout() }}"
-            data-cookie-id-table="manufacturersTable"
-            data-pagination="true"
-            data-id-table="manufacturersTable"
-            data-search="true"
-            data-show-footer="true"
-            data-side-pagination="server"
-            data-show-columns="true"
-            data-show-export="true"
-            data-show-refresh="true"
-            data-sort-order="asc"
-            id="manufacturersTable"
-            class="table table-striped snipe-table"
-            data-url="{{route('api.manufacturers.index', ['deleted' => e(Input::get('deleted')) ]) }}"
-            data-export-options='{
-              "fileName": "export-manufacturers-{{ date('Y-m-d') }}",
-              "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-              }'>
+              <table
+                data-columns="{{ \App\Presenters\ManufacturerPresenter::dataTableLayout() }}"
+                data-cookie-id-table="manufacturersTable"
+                data-pagination="true"
+                data-id-table="manufacturersTable"
+                data-search="true"
+                data-show-footer="true"
+                data-side-pagination="server"
+                data-show-columns="true"
+                data-show-export="true"
+                data-show-refresh="true"
+                data-sort-order="asc"
+                data-toolbar="#toolbar"                
+                id="manufacturersTable"
+                class="table table-striped snipe-table"
+                data-url="{{route('api.manufacturers.index', ['deleted' => e(Input::get('deleted')) ]) }}"
+                data-export-options='{
+                  "fileName": "export-manufacturers-{{ date('Y-m-d') }}",
+                  "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                  }'>
 
-          </table>
+              </table>
+            </div>
+          </div>
         </div>
+        {{ Form::close() }}
       </div><!-- /.box-body -->
     </div><!-- /.box -->
   </div>
