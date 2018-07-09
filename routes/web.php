@@ -37,6 +37,8 @@ Route::group(['middleware' => 'auth'], function () {
     ]);
 
     Route::post('manufacturers/bulk', 'ManufacturersController@bulk')->name('manufacturers.bulk');
+    Route::post('manufacturers/bulk-merge', 'ManufacturersController@merge')->name('manufacturers.bulk-merge');
+
     /*
     * Suppliers
     */

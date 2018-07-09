@@ -269,6 +269,73 @@ class ManufacturersController extends Controller
     }
 
    
+    /**
+     * Prepeares bulk actions on manufacturers
+     * 
+     * @param Request $request
+     * @return Illuminate\Contracts\View\View
+     */
+    public function bulk(Request $request)
+    {
+        $this->authorize('update', Manufacturer::class);
+
+        if (!$request->has('bulk_actions')) {
+            return redirect()->back()->with('error', trans('general.bulk_no_action_selected'));
+        }
+
+        $action = $request->input('bulk_actions');        
+
+        if (!$request->has('ids')) {
+            return redirect()->back()->with('error', trans('admin/manufacturers/form.no_manufactures_selected'));
+        }
+
+        $manufacturer_ids = collect($request->input('ids'))->values();
+
+        /**
+         * Merging multiple manufacturers together
+         */
+        if($action == 'merge') {
+
+            /**
+             * Get all manufactures to be merged
+             */
+            $manufacturers = Manufacturer::find($manufacturer_ids);
+
+            $manufacturers_count = $manufacturers->count();
+
+            $ids = $manufacturers->pluck('id');
+
+
+            /**
+             * Prepare selects, with default empty entries
+             */
+            $names = $manufacturers->pluck('name', 'id')->reject(function ($value) {
+                return $value == '';
+            });
+
+            $urls = $manufacturers->pluck('url', 'id')->reject(function ($value) {
+                return $value == '';
+            })->prepend(trans('admin/manufacturers/form.select_url'), '');
+
+            $support_urls = $manufacturers->pluck('support_url', 'id')->reject(function ($value) {
+                return $value == '';
+            })->prepend(trans('admin/manufacturers/form.select_support_url'), '');
+
+            $support_phones = $manufacturers->pluck('support_phone', 'id')->reject(function ($value) {
+                return $value == '';
+            })->prepend(trans('admin/manufacturers/form.select_support_phones'), '');
+
+            $support_emails = $manufacturers->pluck('support_email', 'id')->reject(function ($value) {
+                return $value == '';
+            })->prepend(trans('admin/manufacturers/form.select_support_email'), '');
+
+            $images = $manufacturers->pluck('image', 'id')->reject(function ($value) {
+                return $value == '';
+            });
+
+            return view('manufacturers/bulk-merge', compact('manufacturers_count', 'ids', 'names', 'urls', 'support_urls', 'support_phones', 'support_emails', 'images'));
+        } 
+    }
 
 
 }
