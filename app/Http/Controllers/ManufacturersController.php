@@ -8,6 +8,7 @@ use App\Models\Manufacturer;
 use Auth;
 use Exception;
 use Gate;
+use Illuminate\Support\Facades\Log;
 use Input;
 use Lang;
 use Redirect;
@@ -337,5 +338,89 @@ class ManufacturersController extends Controller
         } 
     }
 
+    /**
+     * Merges multiple manufacturers
+     * 
+     * @param  Request $request
+     * @return Redirect
+     */
+    public function merge(Request $request) {
+        /**
+         * Check for create-permission, since we are creating a new manufacturer based on the merged manufacturers
+         */
+        $this->authorize('create', Manufacturer::class);
+
+        // TODO: Validation
+        
+        // Get all manufacturers, for accessing the selected values
+        $ids = collect($request->input('ids'))->keys();
+
+        $manufacturers = Manufacturer::whereIn('id', $ids)->get()->keyBy('id');
+
+        // Create a new manufacturer with the selected values
+        $manufacturer = new Manufacturer;
+        $manufacturer->user_id = Auth::id();
+        $manufacturer->name = $manufacturers->get($request->input('name'))->name;
+
+        if ($request->input('url') != '') {
+            $manufacturer->url = $manufacturers->get($request->input('url'))->url;
+        }
+        if ($request->input('support_url') != '') {
+            $manufacturer->support_url = $manufacturers->get($request->input('support_url'))->support_url;
+        }
+        if ($request->input('support_phone') != '') {
+            $manufacturer->support_phone = $manufacturers->get($request->input('support_phone'))->support_phone;
+        }
+        if ($request->input('support_email') != '') {
+            $manufacturer->support_email = $manufacturers->get($request->input('support_email'))->support_email;
+        }
+        if ($request->input('image') != '') {
+            $manufacturer->image = $manufacturers->get($request->input('image'))->image;
+        }
+
+        /**
+         * We force the save, because a validation rule prevents us from having two manufacturers with the same name.
+         * But since we are going to delete the other ones later, this is fine
+         */
+        if (!$manufacturer->forceSave()) {
+            return redirect()->route('manufacturers.index')->with('warning', trans('admin/manufacturers/message.merge.error'));
+        }
+
+        /**
+         * Move all relationships to the new manufacturer
+         */
+        $models      = $manufacturers->pluck('models')->flatten();
+        $licenses    = $manufacturers->pluck('licenses')->flatten();
+        $accessories = $manufacturers->pluck('accessories')->flatten();
+        $consumables = $manufacturers->pluck('consumables')->flatten();
+
+        $manufacturer->models()->saveMany($models);
+        $manufacturer->licenses()->saveMany($licenses);
+        $manufacturer->accessories()->saveMany($accessories);
+        $manufacturer->consumables()->saveMany($consumables);
+
+        /**
+         * Remove the old manufacturers
+         */
+        foreach($manufacturers as $mergedManufacturer) {
+
+            // Remove now unused manufacturer images
+            if ($mergedManufacturer->image != null && $mergedManufacturer->image != $manufacturer->image) {
+                try {
+                    unlink(public_path() . '/uploads/manufacturers/' . $mergedManufacturer->image);
+                } catch (\Exception $e) {
+                    Log::error($e);
+                }
+            }
+
+            /**
+             * Delete the merged manufacturers directly, without trashing them.
+             * All of their relationships have been moved
+             */
+            $mergedManufacturer->forceDelete();
+        }
+
+        return redirect()->route('manufacturers.index')->with('success', trans('admin/manufacturers/message.merge.success'));
+    }
 
 }

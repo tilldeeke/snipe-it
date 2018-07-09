@@ -24,6 +24,11 @@ return array(
         'confirm'   => 'Are you sure you wish to delete this manufacturer?',
         'error'   => 'There was an issue deleting the manufacturer. Please try again.',
         'success' => 'The Manufacturer was deleted successfully.'
-    )
+    ),
+
+    'merge' => array(
+        'error'   => 'There was an issue merging the manufacturers. Please try again.',
+        'success' => 'The Manufacturers were merged successfully.'
+    )    
 
 );
