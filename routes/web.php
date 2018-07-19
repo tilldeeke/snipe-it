@@ -467,5 +467,19 @@ Route::group(['middleware' => 'web'], function () {
 
 Auth::routes();
 
-
-
+/**
+ * Routes for mandatory password changes
+ */
+Route::get(
+    'password/change',
+    [
+        'as' => 'mandatory-password-change',
+        'middleware' => ['web'],
+        'uses' => 'Auth\MandatoryPasswordChangeController@edit' ]
+);
+Route::post(
+    'password/change',
+    [    
+        'middleware' => ['web'],
+        'uses' => 'Auth\MandatoryPasswordChangeController@update' ]
+);
