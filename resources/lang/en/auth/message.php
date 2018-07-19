@@ -34,4 +34,8 @@ return array(
         'success' => 'Your account has been successfully activated.',
     ),
 
+    'change_password' => array(
+        'success' => 'Your password has been sucessfully changed.',
+    ),    
+
 );
