@@ -186,7 +186,20 @@
                   </div>
                 </div>
                 @endif
-
+                @if ($user->ldap_import!='1')
+                <div class="form-group">
+                  <div class="col-sm-3">
+                  </div>
+                  <div class="col-sm-9">
+                    <div class="checkbox">
+                      <label for="require_password_change">
+                        {{ Form::checkbox('require_password_change', '1', null, ['id' => 'require_password_change']) }}
+                        Require the user to set a new password after login.
+                      </label>
+                    </div>
+                  </div>
+                </div> <!--/form-group-->                
+                @endif
                 <!-- Email -->
                 <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                   <label class="col-md-3 control-label" for="email">{{ trans('admin/users/table.email') }} </label>

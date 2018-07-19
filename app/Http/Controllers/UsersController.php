@@ -126,6 +126,8 @@ class UsersController extends Controller
         $user->country = $request->input('country', null);
         $user->zip = $request->input('zip', null);
 
+        $user->mandatory_password_change_required = $request->input('require_password_change', false);
+
         // Strip out the superuser permission if the user isn't a superadmin
         $permissions_array = $request->input('permission');
 
@@ -290,6 +292,7 @@ class UsersController extends Controller
         $user->activated = $request->input('activated', 0);
         $user->zip = $request->input('zip', null);
 
+        $user->mandatory_password_change_required = (bool) $request->input('require_password_change', false);
 
         // Update the location of any assets checked out to this user
         Asset::where('assigned_type', User::class)
